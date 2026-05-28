@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Data from File</title>
+    <style>
+        body { font-family: Arial; padding: 30px; }
+        button { 
+            padding: 12px 24px; 
+            font-size: 16px; 
+            background: #007bff; 
+            color: white; 
+            border: none; 
+            border-radius: 4px; 
+            cursor: pointer; 
+        }
+        button:hover { background: #0056b3; }
+        #data-container { margin-top: 20px; }
+        .item { 
+            background: #f5f5f5; 
+            padding: 12px; 
+            margin: 8px 0; 
+            border-radius: 4px; 
+            border-left: 4px solid #007bff;
+        }
+    </style>
+</head>
+<body>
+    <h2>Backend Data Viewer</h2>
+    <button id="loadBtn" onclick="fetchData()">Click here for data</button>
+    
+    <div id="data-container"></div>
+
+    <script>
+        async function fetchData() {
+            const container = document.getElementById('data-container');
+            const btn = document.getElementById('loadBtn');
+            
+            btn.disabled = true;
+            container.innerHTML = 'Loading...';
+            
+            try {
+                const res = await fetch('/api');
+                const data = await res.json();
+                
+                if (res.status !== 200) {
+                    container.innerHTML = `Error: ${data.error}`;
+                    return;
+                }
+                
+                // Clear and show data
+                container.innerHTML = '<h3>Data from data.json:</h3>';
+                data.forEach(item => {
+                    container.innerHTML += `
+                        <div class="item">
+                            <strong>${item.name}</strong> <br>
+                             Place: ${item.Place}
+                        </div>
+                    `;
+                });
+                
+                btn.textContent = 'Data Loaded';
+                
+            } catch (err) {
+                container.innerHTML = 'Failed to fetch data';
+                console.error(err);
+            }
+        }
+    </script>
+</body>
+</html>
